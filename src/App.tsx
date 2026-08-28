@@ -10,6 +10,7 @@ import { ViewTab } from './types';
 
 export default function App() {
   const [hasCompletedLoading, setHasCompletedLoading] = useState(false);
+  const [isPushingUp, setIsPushingUp] = useState(false);
   const [activeTab, setActiveTab] = useState<ViewTab>('home');
 
   const handleTabSelect = (tab: ViewTab) => {
@@ -18,6 +19,7 @@ export default function App() {
 
   const handleResetToCRT = () => {
     setHasCompletedLoading(false);
+    setIsPushingUp(false);
     setActiveTab('home');
   };
 
@@ -26,20 +28,35 @@ export default function App() {
   return (
     <div
       className={`relative min-h-screen w-full transition-colors duration-500 overflow-x-hidden ${
-        isDarkMode ? 'bg-[#0e0f12] text-white' : 'bg-[#ffffff] text-[#111111]'
+        !hasCompletedLoading
+          ? 'bg-[#090a0f]'
+          : isDarkMode
+          ? 'bg-[#0e0f12] text-white'
+          : 'bg-[#ffffff] text-[#111111]'
       }`}
     >
       {/* 1. Color Curtain Loading Screen */}
       <AnimatePresence>
         {!hasCompletedLoading && (
           <LoadingScreen
+            onExitStart={() => setIsPushingUp(true)}
             onComplete={() => setHasCompletedLoading(true)}
           />
         )}
       </AnimatePresence>
 
-      {/* 2. Main Portfolio Layout (Pre-mounted beneath curtain so reveal is seamless) */}
-      <div className="relative min-h-screen w-full flex flex-col justify-between">
+      {/* 2. Main Portfolio Layout - Pushes up from bottom in sync with black curtain exit */}
+      <motion.div
+        initial={{ y: hasCompletedLoading ? '0%' : '100%' }}
+        animate={{ y: isPushingUp || hasCompletedLoading ? '0%' : '100%' }}
+        transition={{
+          duration: 0.82,
+          ease: [0.65, 0, 0.35, 1], // Exactly matched with the black curtain's ease curve
+        }}
+        className={`relative min-h-screen w-full flex flex-col justify-between ${
+          !isDarkMode ? 'bg-[#ffffff]' : 'bg-[#0e0f12]'
+        }`}
+      >
         {/* Top Navbar */}
         <Navbar
           activeTab={activeTab}
@@ -73,8 +90,7 @@ export default function App() {
             />
           )}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
-

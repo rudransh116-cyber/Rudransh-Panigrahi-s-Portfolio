@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Greeting } from '../types';
+import { GeminiChatField } from './GeminiChatField';
 
 interface HeroSectionProps {
   onNavigateToWorks: () => void;
@@ -29,13 +30,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
   const [greetingIndex, setGreetingIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Middle Circle hover state
-  const [isCircleHovered, setIsCircleHovered] = useState(false);
-
   // Figma Cat Comment Bubble state
   const [isCommentHovered, setIsCommentHovered] = useState(false);
   const [isCommentPinned, setIsCommentPinned] = useState(false);
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragConstraintsRef = useRef<HTMLDivElement>(null);
 
   // Handle language switching on hover
   useEffect(() => {
@@ -49,7 +49,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
       }, 500);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      // Retain the current language where the user stopped hovering
     }
 
     return () => {
@@ -59,10 +58,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
 
   const currentGreeting = MULTILINGUAL_GREETINGS[greetingIndex];
 
-  // Comment is active/expanded if hovered OR pinned by click
-  const isCommentExpanded = isCommentHovered || isCommentPinned;
+  // Comment is active/expanded if hovered OR pinned by click OR being dragged
+  const isCommentExpanded = isCommentHovered || isCommentPinned || isDragging;
 
   const handleCommentClick = () => {
+    if (isDragging) return;
     setHasBeenOpened(true);
     setIsCommentPinned((prev) => !prev);
   };
@@ -74,7 +74,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
     : '0 6px 20px rgba(29, 161, 165, 0.38)';
 
   return (
-    <main className="relative z-10 w-full min-h-[calc(100vh-140px)] flex flex-col justify-center items-center px-6 sm:px-12 md:px-16 lg:px-20 py-8 select-none">
+    <main
+      ref={dragConstraintsRef}
+      className="relative z-10 w-full min-h-[calc(100vh-140px)] flex flex-col justify-center items-center px-6 sm:px-12 md:px-16 lg:px-20 py-8 select-none"
+    >
       {/* 3-Column Grid Layout matching screenshot */}
       <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 items-center">
         
@@ -104,74 +107,26 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
           </div>
         </div>
 
-        {/* MIDDLE COLUMN: Compact Glowing Pink Circle with smooth Black Transition on Hover */}
-        <div className="flex flex-col justify-center items-center">
-          <div className="relative">
-            {/* Outer Pink Ambient Glow Halo */}
-            <motion.div
-              animate={{
-                scale: isCircleHovered ? [1, 1.08, 1.04] : [1, 1.03, 1],
-                opacity: isCircleHovered ? 0.95 : 0.65,
-              }}
-              transition={{
-                duration: 2.8,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className="absolute -inset-6 rounded-full bg-gradient-to-r from-pink-300/35 via-rose-200/45 to-pink-400/35 blur-2xl pointer-events-none"
-            />
-
-            {/* Main Interactive Circle (Decreased size & ultra smooth animation) */}
-            <button
-              id="interactive-pink-circle"
-              onClick={onNavigateToWorks}
-              onMouseEnter={() => setIsCircleHovered(true)}
-              onMouseLeave={() => setIsCircleHovered(false)}
-              className={`relative w-56 h-56 sm:w-60 sm:h-60 md:w-64 md:h-64 rounded-full cursor-pointer overflow-hidden flex flex-col items-center justify-center border transition-all duration-400 ease-out active:scale-95 ${
-                isCircleHovered
-                  ? 'bg-[#111111] text-white border-black pink-soft-glow-hover scale-[1.02]'
-                  : 'bg-white text-neutral-700 border-pink-100/80 pink-soft-glow scale-100'
-              }`}
-            >
-              <AnimatePresence mode="wait">
-                {!isCircleHovered ? (
-                  <motion.div
-                    key="circle-default"
-                    initial={{ opacity: 0, scale: 0.92 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.92 }}
-                    transition={{ duration: 0.22, ease: 'easeOut' }}
-                    className="flex flex-col items-center justify-center text-center p-4"
-                  >
-                    <p className="text-base sm:text-lg font-medium text-neutral-600 tracking-tight">
-                      Hover on me!
-                    </p>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="circle-hovered"
-                    initial={{ opacity: 0, scale: 0.92 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.92 }}
-                    transition={{ duration: 0.22, ease: 'easeOut' }}
-                    className="flex flex-col items-center justify-center text-center p-4"
-                  >
-                    <p className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                      Now Click!
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
-          </div>
+        {/* MIDDLE COLUMN: Seamless Morphing AI Search & Chat Container */}
+        <div className="flex flex-col justify-center items-center w-full">
+          <GeminiChatField />
         </div>
 
-        {/* RIGHT COLUMN: Figma Cat Comment Bubble & Designer Bio */}
+        {/* RIGHT COLUMN: Draggable Figma Cat Comment Bubble & Designer Bio */}
         <div className="flex flex-col justify-center items-start max-w-md">
           
-          {/* FIGMA MULTIPLAYER COMMENT PIN WITH CAT AVATAR */}
+          {/* FIGMA MULTIPLAYER COMMENT PIN WITH CAT AVATAR - DRAGGABLE */}
           <div className="relative mb-6">
-            <div
+            <motion.div
+              drag
+              dragConstraints={dragConstraintsRef}
+              dragElastic={0.2}
+              dragMomentum={true}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={() => {
+                setTimeout(() => setIsDragging(false), 50);
+              }}
+              whileDrag={{ scale: 1.08, zIndex: 60, cursor: 'grabbing' }}
               id="figma-cat-comment-bubble"
               onClick={handleCommentClick}
               onMouseEnter={() => {
@@ -179,14 +134,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
                 setHasBeenOpened(true);
               }}
               onMouseLeave={() => setIsCommentHovered(false)}
-              className="relative cursor-pointer select-none inline-block filter transition-all active:scale-95"
-              title={isCommentPinned ? "Click to unpin comment" : "Click to pin comment"}
+              className="relative cursor-grab select-none inline-block filter transition-all active:cursor-grabbing touch-none z-30"
+              title="Drag me around or click to pin/unpin!"
             >
               {/* Expanding Figma Multiplayer Speech Bubble Container */}
               <motion.div
                 animate={{
                   backgroundColor: bubbleBgColor,
-                  boxShadow: bubbleShadow,
+                  boxShadow: isDragging ? '0 12px 32px rgba(0,0,0,0.25)' : bubbleShadow,
                   borderRadius: isCommentExpanded ? '18px 18px 18px 4px' : '24px 24px 24px 4px',
                 }}
                 transition={{ duration: 0.28, ease: 'easeOut' }}
@@ -202,7 +157,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
                     src="/src/assets/images/cat_comment_avatar_1787680043876.jpg"
                     alt="Cat avatar"
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover pointer-events-none"
                   />
                 </div>
 
@@ -214,7 +169,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
                       animate={{ opacity: 1, x: 0, width: 'auto' }}
                       exit={{ opacity: 0, x: -8, width: 0 }}
                       transition={{ duration: 0.2, ease: 'easeOut' }}
-                      className="ml-2.5 flex flex-col justify-center text-left whitespace-nowrap overflow-hidden"
+                      className="ml-2.5 flex flex-col justify-center text-left whitespace-nowrap overflow-hidden pointer-events-none"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-white tracking-tight">
@@ -243,7 +198,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigateToWorks }) =
                   />
                 </svg>
               </motion.div>
-            </div>
+            </motion.div>
           </div>
 
           {/* BIO TEXT */}
