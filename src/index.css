@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #111111;
+    letter-spacing: -0.015em;
+  }
+}
+
+.font-pixel {
+  font-family: 'VT323', monospace;
+}
+
+.font-pixel-art {
+  font-family: 'Press Start 2P', monospace;
+}
+
+.font-space {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-editorial {
+  font-family: 'Newsreader', Georgia, serif;
+}
+
+.font-instrument {
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+
+/* CRT Screen Effects */
+.crt-screen {
+  background: radial-gradient(circle at center, #1b1c1e 0%, #0c0d0f 95%, #050607 100%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.crt-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+}
+
+.crt-glow {
+  text-shadow: 0 0 8px rgba(240, 240, 255, 0.8), 0 0 16px rgba(210, 210, 255, 0.4);
+}
+
+.crt-amber-glow {
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.8), 0 0 16px rgba(255, 176, 0, 0.4);
+}
+
+.crt-green-glow {
+  text-shadow: 0 0 8px rgba(51, 255, 51, 0.8), 0 0 16px rgba(51, 255, 51, 0.4);
+}
+
+@keyframes flicker {
+  0% { opacity: 0.97; }
+  50% { opacity: 1; }
+  100% { opacity: 0.96; }
+}
+
+.animate-crt-flicker {
+  animation: flicker 0.15s infinite;
+}
+
+/* Pink glow circle */
+.pink-soft-glow {
+  box-shadow: 0 0 60px 20px rgba(244, 114, 182, 0.22), 0 0 100px 40px rgba(251, 207, 232, 0.35);
+}
+
+.pink-soft-glow-hover {
+  box-shadow: 0 0 70px 30px rgba(244, 114, 182, 0.35), 0 0 120px 60px rgba(251, 207, 232, 0.5);
+}
