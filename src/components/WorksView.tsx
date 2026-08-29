@@ -3,11 +3,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
 import { PointerArrowBackground } from './PointerArrowBackground';
 
-interface WorksViewProps {
-  onBackToHome: () => void;
-  onNavigateToContact: () => void;
-}
-
 interface ProjectItem {
   id: string;
   title: string;
@@ -89,20 +84,25 @@ const SKILLS_LIST = [
 
 const EXPERIENCE_LIST: ExperienceItem[] = [
   {
-    role: 'UI/UX Designer & Product Engineer',
+    role: 'UIUX Designer & Product Engineer',
     company: 'iServeU',
-    timeline: 'December 2023 – Present',
+    timeline: 'December 2023 – August 2026',
     summary:
       'Spearheaded multi-platform financial applications across 10+ banking partnerships serving 100,000+ users across India. Redesigned 20+ legacy projects with a centralized Design System, cutting hand-off time by 40% and accelerating design-to-code velocity by 3x.',
   },
   {
-    role: 'UI/UX Designer (Part-time)',
+    role: 'UIUX Designer (Part-time)',
     company: 'Chamberly AB',
     timeline: 'May 2024 – July 2024',
     summary:
       'Led UI/UX design initiatives for mental health platform serving 5,000+ users. Shipped 20+ interface improvements that increased DAU by 15% and boosted 30-day retention by 10% through optimized onboarding flows.',
   },
 ];
+
+interface WorksViewProps {
+  onBackToHome: () => void;
+  onNavigateToContact: () => void;
+}
 
 export const WorksView: React.FC<WorksViewProps> = ({
   onBackToHome,
@@ -130,25 +130,25 @@ export const WorksView: React.FC<WorksViewProps> = ({
         <PointerArrowBackground theme="dark" gridSpacing={52} />
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col justify-between space-y-10 sm:space-y-12">
+      <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col justify-between space-y-12 sm:space-y-14 text-center">
         
         {/* TOP SECTION: Projects Header & Interactive Showcase */}
-        <div>
-          {/* Projects Title Header */}
-          <div className="flex items-baseline justify-between pt-2 pb-2 sm:pb-3">
+        <div className="w-full flex flex-col items-center">
+          {/* Projects Title Header (Centered) */}
+          <div className="flex items-baseline justify-center gap-3 pt-2 pb-2 sm:pb-3 w-full">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-editorial font-normal tracking-tight text-white">
               Projects
             </h1>
-            <span className="text-2xl sm:text-3xl md:text-4xl font-editorial text-white font-normal">
+            <span className="text-2xl sm:text-3xl md:text-4xl font-editorial text-white/90 font-normal">
               (5+)
             </span>
           </div>
 
           {/* Solid White Line Divider */}
-          <div className="w-full h-[1.5px] bg-white/95 mb-5 sm:mb-6" />
+          <div className="w-full h-[1.5px] bg-white/95 mb-6 sm:mb-8" />
 
           {/* DESKTOP LAYOUT (lg:): Side-by-Side Showcase */}
-          <div className="hidden lg:grid lg:grid-cols-12 gap-8 items-start">
+          <div className="hidden lg:grid lg:grid-cols-12 gap-8 items-start w-full text-left">
             {/* Left Column: Project List */}
             <div className={`${activeProject ? 'lg:col-span-4' : 'lg:col-span-12'} space-y-4 transition-all duration-300`}>
               {PROJECTS_DATA.map((project) => {
@@ -211,7 +211,7 @@ export const WorksView: React.FC<WorksViewProps> = ({
                   </div>
 
                   {/* Description & Links */}
-                  <div className="md:col-span-6 flex flex-col justify-between min-h-[220px] space-y-6">
+                  <div className="md:col-span-6 flex flex-col justify-between min-h-[220px] space-y-6 text-left">
                     <div>
                       <p className="text-sm sm:text-base text-neutral-300 leading-relaxed font-light">
                         {activeProject.description}
@@ -238,7 +238,7 @@ export const WorksView: React.FC<WorksViewProps> = ({
                     <div className="flex justify-end pt-1">
                       <button
                         onClick={handleCloseProject}
-                        className="text-red-500 hover:text-red-400 text-sm font-medium underline underline-offset-4 cursor-pointer transition-colors"
+                        className="text-xs sm:text-sm font-medium text-rose-500 hover:text-rose-400 transition-colors cursor-pointer underline-offset-4 hover:underline px-1 py-0.5"
                       >
                         Close
                       </button>
@@ -249,8 +249,8 @@ export const WorksView: React.FC<WorksViewProps> = ({
             </AnimatePresence>
           </div>
 
-          {/* RESPONSIVE ACCORDION (<lg) - Images hidden on mobile per user request */}
-          <div className="lg:hidden space-y-4">
+          {/* RESPONSIVE ACCORDION (<lg) - Centered structure, images hidden on mobile */}
+          <div className="lg:hidden space-y-4 w-full text-left">
             {PROJECTS_DATA.map((project) => {
               const isActive = activeProject?.id === project.id;
               return (
@@ -312,7 +312,7 @@ export const WorksView: React.FC<WorksViewProps> = ({
                         </div>
 
                         {/* Description */}
-                        <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-light">
+                        <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-light text-left">
                           {project.description}
                         </p>
 
@@ -334,14 +334,14 @@ export const WorksView: React.FC<WorksViewProps> = ({
                           ))}
                         </div>
 
-                        {/* Close button */}
+                        {/* Close button matching AI chatbox style */}
                         <div className="flex justify-end pt-1">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCloseProject();
                             }}
-                            className="text-red-500 hover:text-red-400 text-xs font-medium underline underline-offset-4 cursor-pointer py-1"
+                            className="text-xs sm:text-sm font-medium text-rose-500 hover:text-rose-400 transition-colors cursor-pointer underline-offset-4 hover:underline px-1 py-0.5"
                           >
                             Close
                           </button>
@@ -356,15 +356,17 @@ export const WorksView: React.FC<WorksViewProps> = ({
 
         </div>
 
-        {/* BOTTOM SECTION: Skills & Experience Columns */}
-        <div className="pt-6 sm:pt-8 pb-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14">
+        {/* BOTTOM SECTION: Skills & Experience Columns (Center-aligned headers & layouts) */}
+        <div className="pt-6 sm:pt-8 pb-4 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 text-left">
             
             {/* Skills Column */}
-            <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-editorial font-normal text-white mb-2 sm:mb-3">
-                Skills
-              </h2>
+            <div className="flex flex-col">
+              <div className="flex justify-center md:justify-start w-full">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-editorial font-normal text-white mb-2 sm:mb-3">
+                  Skills
+                </h2>
+              </div>
               <div className="w-full h-[1.5px] bg-white/95 mb-4" />
               
               <div className="space-y-3 sm:space-y-4">
@@ -379,11 +381,13 @@ export const WorksView: React.FC<WorksViewProps> = ({
               </div>
             </div>
 
-            {/* Experience Column (Added from Resume with Timelines & Matching Typography) */}
-            <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-editorial font-normal text-white mb-2 sm:mb-3">
-                Experience
-              </h2>
+            {/* Experience Column (iServeU updated to August 2026) */}
+            <div className="flex flex-col">
+              <div className="flex justify-center md:justify-start w-full">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-editorial font-normal text-white mb-2 sm:mb-3">
+                  Experience
+                </h2>
+              </div>
               <div className="w-full h-[1.5px] bg-white/95 mb-4" />
 
               <div className="space-y-4 sm:space-y-5">
