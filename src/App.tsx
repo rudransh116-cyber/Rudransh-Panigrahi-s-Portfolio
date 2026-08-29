@@ -23,17 +23,9 @@ export default function App() {
     setActiveTab('home');
   };
 
-  const isDarkMode = activeTab === 'works' || activeTab === 'contact';
-
   return (
     <div
-      className={`relative min-h-screen w-full transition-colors duration-500 overflow-x-hidden ${
-        !hasCompletedLoading
-          ? 'bg-[#090a0f]'
-          : isDarkMode
-          ? 'bg-[#0e0f12] text-white'
-          : 'bg-[#ffffff] text-[#111111]'
-      }`}
+      className="relative min-h-screen w-full bg-[#ffffff] text-[#111111] overflow-hidden select-none"
     >
       {/* 1. Color Curtain Loading Screen */}
       <AnimatePresence>
@@ -45,17 +37,15 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* 2. Main Portfolio Layout - Pushes up from bottom in sync with black curtain exit */}
+      {/* 2. Main Portfolio Base (Home remains static and fixed underneath) */}
       <motion.div
         initial={{ y: hasCompletedLoading ? '0%' : '100%' }}
         animate={{ y: isPushingUp || hasCompletedLoading ? '0%' : '100%' }}
         transition={{
           duration: 0.82,
-          ease: [0.65, 0, 0.35, 1], // Exactly matched with the black curtain's ease curve
+          ease: [0.65, 0, 0.35, 1],
         }}
-        className={`relative min-h-screen w-full flex flex-col justify-between ${
-          !isDarkMode ? 'bg-[#ffffff]' : 'bg-[#0e0f12]'
-        }`}
+        className="relative min-h-screen w-full flex flex-col justify-between bg-[#ffffff]"
       >
         {/* Top Navbar */}
         <Navbar
@@ -64,33 +54,77 @@ export default function App() {
           onResetToCRT={handleResetToCRT}
         />
 
-        {/* Active Screen View */}
+        {/* Static, Fixed Home Content */}
         <div className="relative flex-1 flex flex-col justify-center">
-          {activeTab === 'home' && (
-            <>
-              {/* Pointer arrow background for Home (light theme) */}
-              <PointerArrowBackground theme="light" gridSpacing={52} />
-              <HeroSection
-                onNavigateToWorks={() => setActiveTab('works')}
-              />
-            </>
-          )}
-
-          {activeTab === 'works' && (
-            <WorksView
-              onBackToHome={() => setActiveTab('home')}
-              onNavigateToContact={() => setActiveTab('contact')}
-            />
-          )}
-
-          {activeTab === 'contact' && (
-            <ContactView
-              onBackToHome={() => setActiveTab('home')}
-              onNavigateToWorks={() => setActiveTab('works')}
-            />
-          )}
+          <PointerArrowBackground theme="light" gridSpacing={52} />
+          <HeroSection onNavigateToWorks={() => setActiveTab('works')} />
         </div>
       </motion.div>
+
+      {/* 3. Smooth Overlay Pages (Works & Contact) with Full Internal Scrolling */}
+      <AnimatePresence>
+        {activeTab === 'works' && (
+          <motion.div
+            key="works-overlay"
+            initial={{ y: '-100%' }}
+            animate={{ y: '0%' }}
+            exit={{ y: '-100%' }}
+            transition={{
+              duration: 0.52,
+              ease: [0.32, 0.72, 0, 1], // Smooth, natural opening & symmetric closing
+            }}
+            className="fixed inset-0 z-40 bg-[#0e0f12] text-white flex flex-col overflow-y-auto overflow-x-hidden [overscroll-behavior:contain]"
+          >
+            {/* Top Navbar on Overlay (Sticky so it stays accessible when scrolling) */}
+            <div className="sticky top-0 z-50 bg-[#0e0f12]/90 backdrop-blur-md">
+              <Navbar
+                activeTab={activeTab}
+                onSelectTab={handleTabSelect}
+                onResetToCRT={handleResetToCRT}
+              />
+            </div>
+
+            {/* Works Content view with natural scroll support */}
+            <div className="flex-1 w-full relative">
+              <WorksView
+                onBackToHome={() => setActiveTab('home')}
+                onNavigateToContact={() => setActiveTab('contact')}
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'contact' && (
+          <motion.div
+            key="contact-overlay"
+            initial={{ y: '-100%' }}
+            animate={{ y: '0%' }}
+            exit={{ y: '-100%' }}
+            transition={{
+              duration: 0.52,
+              ease: [0.32, 0.72, 0, 1], // Smooth, natural opening & symmetric closing
+            }}
+            className="fixed inset-0 z-40 bg-[#0e0f12] text-white flex flex-col overflow-y-auto overflow-x-hidden [overscroll-behavior:contain]"
+          >
+            {/* Top Navbar on Overlay (Sticky so it stays accessible when scrolling) */}
+            <div className="sticky top-0 z-50 bg-[#0e0f12]/90 backdrop-blur-md">
+              <Navbar
+                activeTab={activeTab}
+                onSelectTab={handleTabSelect}
+                onResetToCRT={handleResetToCRT}
+              />
+            </div>
+
+            {/* Contact Content view with natural scroll support */}
+            <div className="flex-1 w-full relative">
+              <ContactView
+                onBackToHome={() => setActiveTab('home')}
+                onNavigateToWorks={() => setActiveTab('works')}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
